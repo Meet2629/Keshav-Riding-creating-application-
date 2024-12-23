@@ -158,8 +158,84 @@ Authorization: Bearer jwt_token
 ```bash
 POST /users/logout
 Authorization: Bearer jwt_token
-```
 
+
+Register Captain API
+Endpoint: /captains/register
+Method: POST
+
+Request Body:
+json
+Copy code
+{
+  "fullname": { 
+    "firstname": "string", 
+    "lastname": "string" 
+  },
+  "email": "string",
+  "password": "string",
+  "vehicle": {
+    "color": "string",
+    "plate": "string",
+    "capacity": 1,
+    "vehicleType": "car | motorcycle | auto"
+  }
+}
+Response:
+201:
+json
+Copy code
+{
+  "token": "jwt_token",
+  "captain": {
+    "fullname": { "firstname": "John", "lastname": "Doe" },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+400:
+json
+Copy code
+{
+  "errors": [
+    { "msg": "Invalid Email", "path": "email" },
+    { "msg": "First Name must be at least 3 characters long", "path": "fullname.firstname" },
+    { "msg": "Password must be at least 6 characters long", "path": "password" },
+    { "msg": "vehicle color must be at least 3 characters", "path": "vehicle.color" },
+    { "msg": "plate must be at least 3 characters", "path": "vehicle.plate" },
+    { "msg": "Capacity must be at least 1", "path": "vehicle.capacity" },
+    { "msg": "Invalid vehicle Type", "path": "vehicle.vehicleType" }
+  ]
+}
+400:
+json
+Copy code
+{
+  "message": "Captain already exists"
+}
+
+Example Request:
+bash
+Copy code
+POST /captains/register
+Content-Type: application/json
+{
+  "fullname": { "firstname": "John", "lastname": "Doe" },
+  "email": "john.doe@example.com",
+  "password": "strongpassword123",
+  "vehicle": {
+    "color": "red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
 ---
 
 ### Dependencies:
