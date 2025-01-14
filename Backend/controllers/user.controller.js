@@ -1,7 +1,8 @@
 const userModel= require('../models/user.model.js');
 const userService = require('../services/user.service.js');
 const {validationResult} = require('express-validator');
-const BlacklistTokenModel = require('../models/BlacklistToken.model.js');
+const {BlacklistTokenModel} = require('../models/BlacklistToken.model.js');
+const jwt = require('jsonwebtoken'); 
 
 module.exports.registerUser= async(req,res,next) =>{
     const errors= validationResult(req);
@@ -14,7 +15,7 @@ module.exports.registerUser= async(req,res,next) =>{
 
     const {fullname, email , password} = req.body;
 
-     const isUserAlreadyExist =await userModel.findone({email});
+     const isUserAlreadyExist =await userModel.findOne({email});
 
      if(isUserAlreadyExist){
         return res.status(400).json({message: 'User already exist'});
@@ -72,17 +73,27 @@ module.exports.getUserProfile=async(req,res,next) =>{
     res.status(200).json(req.user);
 }
 
-module.exports.logoutUser = async(req,res,next) =>{
+module.exports.logoutUser = async (req, res, next) => {
+    try {
+        // Retrieve the token from either cookies or headers
+        const token = req.cookies.token || req.headers.authorization.split(' ')[1];
 
-    res.clearCookie('token');
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
+        }
 
-    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+        // Verify the token (using your JWT verification method)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use your JWT verification logic
+        if (!decoded) {
+            return res.status(401).json({ message: 'Invalid or expired token' });
+        }
 
-    await BlacklistTokenModel.create({ token});
+        // Add token to blacklist (logout)
+        await BlacklistTokenModel.create({ token });
 
-    res.status(200).json({message: 'logged out'});
-}
-
-
-
-
+        res.clearCookie('token');  // Clear token from cookies
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid or expired token' });
+    }
+};
