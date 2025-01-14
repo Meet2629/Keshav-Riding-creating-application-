@@ -1,36 +1,188 @@
-import { Link } from "react-router-dom";
+// import React from 'react'
+
+import { useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import "remixicon/fonts/remixicon.css";
+import LocationSearchPanel from "../Components/LocationSearchPanel";
+import VehiclePanel from "../Components/VehiclePanel";
+import ConfirmRide from './../Components/ConfirmRide';
+import LookingForDriver from "../Components/LookingForDriver";
+import WaitingForDriver from './../Components/WaitingForDriver';
 
 const Home = () => {
-  return (
-    <div>
-      <div
-        className="bg-cover bg-center bg-[url(https://img.freepik.com/free-vector/taxi-application-theme_23-2148489550.jpg)] h-screen pt-8 flex justify-between flex-col w-full "
-      >
-        {/* Logo Section */}
-        <header>
-          <h2 className="text-3xl font-bold text-left py-4 px-4 ">Keshav</h2>
-         {/* <img 
-            className="w-16 ml-8" 
-            src="../assets/k.png"
-            alt="Keshav Logo"
-          /> */}
-        </header>
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const vehiclePanelRef = useRef(null)
+  const ConfirmRidePanelRef = useRef(null)
+  const vehicleFoundRef = useRef(null)
+  const waitingForDriverRef = useRef(null)
+  const panelRef = useRef(null);
+  const panelCloseRef = useRef(null);
+  const [vehiclePanel, setVehiclePanel] = useState(false)
+  const [ConfirmRidePanel, setConfirmRidePanel] = useState(false)
+  const [vehicleFound, setVehicleFound] = useState(false)
+  const [waitingForDriver, setWaitingForDriver] = useState(false)
 
-        {/* Main Content Section */}
-        <div className="bg-white pb-7 py-4 px-4 flex flex-col items-center">
-          <h2 className="text-[30px] font-bold text-center">Get Started with Keshav</h2>
-          
-          <Link
-            to="/login"  // Adjust the path as needed
-            className="flex items-center justify-center w-full bg-black text-white py-3 rounded-lg mt-5 max-w-xs mx-auto"
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+
+  useGSAP(
+    function () {
+      if (panelOpen) {
+        gsap.to(panelRef.current, {
+          height: "70%",
+          padding: 24,
+          // opacity:1
+        });
+        gsap.to(panelCloseRef.current, {
+          opacity: 1,
+        });
+      } else {
+        gsap.to(panelRef.current, {
+          height: "0%",
+          padding: 0,
+          // opacity:0
+        });
+        gsap.to(panelCloseRef.current, {
+          opacity: 0,
+        });
+      }
+    },
+    [panelOpen]
+  );
+
+  useGSAP(function() {
+     if(vehiclePanel){
+      gsap.to(vehiclePanelRef.current,{
+        transform:'translateY(0)'
+      })
+     }else{
+      gsap.to(vehiclePanelRef.current,{
+        transform:'translateY(100%)'
+      })
+     }
+  },[vehiclePanel])
+
+  useGSAP(function() {
+    if(ConfirmRidePanel){
+     gsap.to(ConfirmRidePanelRef.current,{
+       transform:'translateY(0)'
+     })
+    }else{
+     gsap.to(ConfirmRidePanelRef.current,{
+       transform:'translateY(100%)'
+     })
+    }
+ },[ConfirmRidePanel])
+
+ useGSAP(function() {
+  if(vehicleFound){
+   gsap.to(vehicleFoundRef.current,{
+     transform:'translateY(0)'
+   })
+  }else{
+   gsap.to(vehicleFoundRef.current,{
+     transform:'translateY(100%)'
+   })
+  }
+},[vehicleFound])
+
+useGSAP(function() {
+  if(waitingForDriver){
+   gsap.to(waitingForDriverRef.current,{
+     transform:'translateY(0)'
+   })
+  }else{
+   gsap.to(waitingForDriverRef.current,{
+     transform:'translateY(100%)'
+   })
+  }
+},[waitingForDriver])
+
+
+
+  return (
+    <div className="h-screen relative overflow-hidden ">
+      <h2 className="text-3xl font-bold text-left w-16 absolute left-5 top-5  ">
+        Keshav
+      </h2>
+      <div className="h-screen w-screen">
+        <img
+          className="h-full w-full object-cover"
+          src="https://www.hanbit.co.kr/data/editor/20210429161116_qvzgnfvw.gif"
+          alt=""
+        />
+      </div>
+      <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
+        <div className="h-[30%] p-6 bg-white relative ">
+          <h5
+            ref={panelCloseRef}
+            onClick={() => {
+              setPanelOpen(false);
+            }}
+            className="absolute opacity-0 top-6 right-6  text-2xl"
           >
-            Continue
-          </Link>
+            <i className="ri-arrow-down-wide-line"></i>
+          </h5>
+          <h4 className="text-2xl font-semibold ">Find a trip</h4>
+          <form
+            onSubmit={(e) => {
+              submitHandler(e);
+            }}
+          >
+            <div className="line absolute h-16 w-1 top-[45%] left-10  bg-gray-900 rounded-full"></div>
+            <input
+              onClick={() => {
+                setPanelOpen(true);
+              }}
+              value={pickup}
+              onChange={(e) => {
+                setPickup(e.target.value);
+              }}
+              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-5"
+              type="text"
+              placeholder="Add a pick up location"
+            />
+            <input
+              onClick={() => {
+                setPanelOpen(true);
+              }}
+              value={destination}
+              onChange={(e) => {
+                setDestination(e.target.value);
+              }}
+              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
+              type="text"
+              placeholder="Enter Your destination"
+            />
+          </form>
         </div>
+
+        <div ref={panelRef} className="bg-white h-0">
+          <LocationSearchPanel setPanelOpen={setPanelOpen}  setVehiclePanel={setVehiclePanel}/>
+        </div>
+      </div>
+
+      <div ref={vehiclePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12">
+          <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+      </div>
+
+      <div ref={ConfirmRidePanelRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12">
+           <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
+      </div>
+
+      <div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12">
+           <LookingForDriver setVehicleFound={setVehicleFound}  />
+      </div>
+     
+      <div ref={waitingForDriverRef} className="fixed w-full z-10 bottom-0  bg-white px-3 py-6 pt-12">
+           <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
       </div>
     </div>
   );
 };
 
 export default Home;
- 
