@@ -15,10 +15,12 @@
     "frontend": "file:",
     "gsap": "^3.12.5",
     "jwt-decode": "^4.0.0",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",
-    "remixicon": "^4.6.0"
+    "remixicon": "^4.6.0",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

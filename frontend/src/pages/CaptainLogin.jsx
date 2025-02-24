@@ -36,7 +36,7 @@ const CaptainLogin = () => {
     <div className='p-7 h-screen flex-col justify-between'>
     <div> 
       <div className='p-7'>
-         <h2 className='text-3xl font-bold text-left w-16 mb-5'>Keshav /\/\/\/\</h2>
+         <h2 className='text-3xl font-bold text-left w-16 mb-5'>Keshav <i className="text-3xl ri-arrow-right-circle-fill"></i></h2>
        <form onSubmit={(e)=>{
          submitHandler(e)
      }}>

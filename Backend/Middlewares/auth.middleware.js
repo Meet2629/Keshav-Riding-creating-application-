@@ -1,68 +1,67 @@
-const userModel =require('../models/user.model');
-const bcrypt =  require('bcrypt');
-const jwt= require('jsonwebtoken');
-const BlacklistTokenModel = require('../models/BlacklistToken.model');
+const userModel = require('../models/user.model');
 const captainModel = require('../models/captain.model');
+const blackListTokenModel = require('../models/blackListToken.model');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
-module.exports.authUser = async (req,res,next) =>{
-    const token =req.cookies.token || 
-    (req.headers.authorization?.split(' ')[1]);
-    if(!token){
-        return res.status(401).json({message: 'Unauthorized'});
-    }
+// Utility function to verify token and check blacklist
+const verifyToken = async (req) => {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) throw new Error('No token provided');
 
-      const isBlacklisted =await BlacklistTokenModel.findOne({ token : token});
+    const isBlacklisted = await blackListTokenModel.findOne({ token });
+    if (isBlacklisted) throw new Error('Token blacklisted');
 
-      if(isBlacklisted){
-        return res.status(401).json({message: 'Unauthorized'});
-      }
+    return jwt.verify(token, process.env.JWT_SECRET);
+};
 
-    try{
-        const decoded = jwt.verify(token,process.env.JWT_SECRET);
-        const user = await userModel.findById(decoded._id)
+module.exports.authUser = async (req, res, next) => {
+    try {
+        const decoded = await verifyToken(req);
+        console.log("✅ Decoded User Token:", decoded);
+
+        const user = await userModel.findById(decoded._id);
+        if (!user) throw new Error('User not found');
 
         req.user = user;
-
-        return next();
-
-
-    }catch(err){
-        return res.status(401).json({message: 'Unauthorized'});
+        next();
+    } catch (err) {
+        console.error("❌ User Authentication Error:", err.message);
+        return res.status(401).json({ message: `Unauthorized: ${err.message}` });
     }
-}
+};
 
 module.exports.authCaptain = async (req, res, next) => {
-  const token =
-    req.cookies.token ||
-    (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized: No token provided' });
+    }
 
-  try {
-    // Check if token is blacklisted
-    const isBlacklisted = await BlacklistTokenModel.findOne({ token });
+    const isBlacklisted = await blackListTokenModel.findOne({ token });
     if (isBlacklisted) {
-      return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(401).json({ message: 'Unauthorized: Token is blacklisted' });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("🔍 Decoded Token:", decoded);
 
-    // Find captain by ID
-    const captain = await captainModel.findById(decoded._id);
-    if (!captain) {
-      return res.status(404).json({ message: 'Captain not found' });
+        let captain = await captainModel.findById(decoded._id);
+
+        if (!captain) {
+            console.log("❌ Captain not found. Token might be outdated.");
+            return res.status(401).json({ message: 'Unauthorized: Token expired, please log in again' });
+        }
+
+        req.captain = captain;
+        return next();
+    } catch (err) {
+        console.log("❌ JWT Verification Error:", err.message);
+        return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
+};
 
-    // Attach captain to the request object
-    req.captain = captain;
 
-    // Proceed to the next middleware
-    next();
-  } catch (err) {
-    console.error('Auth error:', err.message);
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-}
+
+

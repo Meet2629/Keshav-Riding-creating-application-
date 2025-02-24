@@ -3,89 +3,94 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const captainSchema = new mongoose.Schema({
-    fullname: {
-        firstname: {
-            type: String,
-            required: true,
-            minlength: [3, 'First name must be at least 3 characters long'],
-        },
-        lastname: {
-            type: String,
-            minlength: [3, 'Last name must be at least 3 characters long'],
-        },
+  fullname: {
+    firstname: {
+      type: String,
+      required: true,
+      minlength: [3, 'Firstname must be at least 3 characters long'],
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
-        minlength: [5, 'Email must be at least 5 characters long'],
+    lastname: {
+      type: String,
+      minlength: [3, 'Lastname must be at least 3 characters long'],
     },
-    password: {
-        type: String,
-        required: true,
-        select: false,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
+    index: true, // 🔹 Added for faster lookups
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
+  socketId: {
+    type: String,
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive',
+  },
+  vehicle: {
+    color: {
+      type: String,
+      required: true,
+      minlength: [3, 'Color must be at least 3 characters long'],
     },
-    socketId: {
-        type: String,
+    plate: {
+      type: String,
+      required: true,
+      minlength: [3, 'Plate must be at least 3 characters long'],
     },
-    status: {
-        type: String,
-        enum: ['active', 'inactive'],
-        default: 'inactive',
+    capacity: {
+      type: Number,
+      required: true,
+      min: [1, 'Capacity must be at least 1'],
     },
-    vehicle: {
-        color: {
-            type: String,
-            required: true,
-            minlength: [3, 'Color must be at least 3 characters long'],
-        },
-        plate: {
-            type: String,
-            required: true,
-            minlength: [3, 'Plate must be at least 3 characters long'],
-        },
-        capacity: {
-            type: Number,
-            required: true,
-            min: [1, 'Capacity must be at least 1'],
-        },
-        vehicleType: {
-            type: String,
-            required: true,
-            enum: ['car', 'motorcycle', 'auto'],
-        }
+    vehicleType: {
+      type: String,
+      required: true,
+      enum: ['car', 'motorcycle', 'auto'],
     },
-    location: {
-        lat: {
-            type: Number,
-        },
-        lng: {
-            type: Number,
-        }
-    }
+  },
+  location: {
+    lat: {
+      type: Number,
+      required: true, // 🔹 Ensure location data is always available
+    },
+    lng: {
+      type: Number,
+      required: true,
+    },
+  },
 });
 
+// 🔹 Ensure password is always returned when querying for login
+captainSchema.pre('findOne', function () {
+  this.select('+password');
+});
+
+// 🔹 Generate JWT Token
 captainSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    return token;
+  return jwt.sign(
+    { _id: this._id, status: this.status }, // 🔹 Include status in token
+    process.env.JWT_SECRET,
+    { expiresIn: '24h' }
+  );
 };
 
+// 🔹 Compare Password
 captainSchema.methods.comparePassword = async function (password) {
-    try {
-        return await bcrypt.compare(password, this.password);
-    } catch (error) {
-        throw new Error('Password comparison failed');
-    }
+  return await bcrypt.compare(password, this.password);
 };
 
+// 🔹 Hash Password
 captainSchema.statics.hashPassword = async function (password) {
-    try {
-        return await bcrypt.hash(password, 10);
-    } catch (error) {
-        throw new Error('Password hashing failed');
-    }
+  return await bcrypt.hash(password, 10);
 };
 
 const captainModel = mongoose.model('Captain', captainSchema);

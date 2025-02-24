@@ -18,12 +18,8 @@ router.post('/login', [
 ], userController.loginUser);
 
 // Get user profile route
-router.get('/profile', authMiddleware.authUser, userController.getUserProfile);
+router.get('/profile', authMiddleware.authUser, userController.getProfile);
 
 router.get('/logout',authMiddleware.authUser, userController.logoutUser)
-
-
-
-
 
 module.exports = router;

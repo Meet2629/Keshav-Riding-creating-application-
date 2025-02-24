@@ -60,7 +60,7 @@ const CaptainSignup = () => {
   return (
     <div className="py-5 px-5 h-screen flex flex-col justify-between">
       <div>
-         <h2 className='text-3xl font-bold text-left w-16 mb-5'>Keshav /\/\/\/\</h2>
+         <h2 className='text-3xl font-bold text-left w-16 mb-5'>Keshav <i className="ri-arrow-right-circle-fill"></i></h2>
 
         <form onSubmit={submitHandler}>
           <h3 className="text-lg w-full font-medium mb-2">What&apos;s our Captain&apos;s name</h3>
@@ -155,7 +155,7 @@ const CaptainSignup = () => {
         </p>
       </div>
       <div>
-        <p className="text-[10px] mt-6 leading-tight">
+        <p className="text-[10px] mt-8 leading-tight">
           This site is protected by reCAPTCHA and the <span className="underline">Google Privacy Policy</span> and <span className="underline">Terms of Service apply</span>.
         </p>
       </div>

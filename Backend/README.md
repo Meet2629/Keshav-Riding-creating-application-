@@ -1,4 +1,3 @@
-```markdown
 # Backend API Documentation
 
 ## User Registration API
@@ -240,8 +239,6 @@ Content-Type: application/json
 }
 ```
 
-
-```markdown
 ## Captain Login API
 
 **Endpoint**: `/captains/login`  
@@ -367,6 +364,55 @@ Authorization: Bearer jwt_token
 
 ---
 
+## Get Fare API
+
+**Endpoint**: `/get-fare`  
+**Method**: `GET`  
+**Authentication**: Bearer token required
+
+### Query Parameters:
+```json
+{
+  "pickup": "string",
+  "destination": "string"
+}
+```
+
+### Response:
+- **200**: 
+  ```json
+  {
+    "fare": "calculated_fare"
+  }
+  ```
+- **400**: 
+  ```json
+  {
+    "errors": [
+      { "msg": "Invalid Pickup address", "param": "pickup" },
+      { "msg": "Invalid destination address", "param": "destination" }
+    ]
+  }
+  ```
+- **401**: 
+  ```json
+  {
+    "message": "Unauthorized"
+  }
+  ```
+- **500**: 
+  ```json
+  {
+    "message": "Internal Server Error"
+  }
+  ```
+
+### Example Request:
+```bash
+GET /get-fare?pickup=123%20Main%20St&destination=456%20Elm%20St
+Authorization: Bearer jwt_token
+```
+
 ## Dependencies
 
 - express
@@ -374,4 +420,3 @@ Authorization: Bearer jwt_token
 - bcrypt
 - jsonwebtoken
 - express-validator
-```
