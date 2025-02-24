@@ -1,6 +1,6 @@
 const userModel = require('../models/user.model');
 const captainModel = require('../models/captain.model');
-const blackListTokenModel = require('../models/blackListToken.model');
+const blackListTokenModel = require('../models/BlacklistToken.model');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
