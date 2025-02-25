@@ -65,7 +65,7 @@ const CaptainHome = () => {
 
     const refreshAccessToken = async () => {
         try {
-            const res = await axios.post('http://localhost:4000/auth/refresh-token', {}, { withCredentials: true });
+            const res = await axios.post('https://keshav-riding-creating-application.onrender.com/auth/refresh-token', {}, { withCredentials: true });
             return res.data.accessToken;  // Return the new token
         } catch (error) {
             console.error('Failed to refresh token:', error);
@@ -77,7 +77,7 @@ const CaptainHome = () => {
         try {
             const token = localStorage.getItem('token');
     
-            let res = await axios.post('http://localhost:4000/rides/confirm', { rideId: ride._id }, {
+            let res = await axios.post('https://keshav-riding-creating-application.onrender.com/rides/confirm', { rideId: ride._id }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
     
