@@ -1,9 +1,13 @@
 import { io } from "socket.io-client";
 
-// Define the base URL for the socket connection
-const SOCKET_URL = "https://keshav-riding-creating-application.onrender.com"; // Replace with your actual server URL
+const SOCKET_URL = "https://keshav-riding-creating-application.onrender.com"; 
 
-// Initialize the socket connection
-const socket = io(SOCKET_URL);
+const socket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"], // Enables fallback to polling if WebSockets fail
+  reconnection: true,                   // Enable automatic reconnection
+  reconnectionAttempts: 5,               // Try reconnecting 5 times
+  reconnectionDelay: 5000,               // Wait 5 seconds between reconnect attempts
+  withCredentials: true,                 // Helps with CORS issues if needed
+});
 
 export default socket;
