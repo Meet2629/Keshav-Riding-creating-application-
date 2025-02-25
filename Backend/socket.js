@@ -7,7 +7,7 @@ let io;
 function initializeSocket(server) {
     io = socketIo(server, {
         cors: {
-            origin: "https://keshav-riding-creating-application-l04h.onrender.com", // ✅ Updated frontend URL
+            origin: process.env.FRONTEND_URL || "http://localhost:5173", // Ensure the URL is correctly set
             methods: ["GET", "POST"],
             credentials: true
         }
