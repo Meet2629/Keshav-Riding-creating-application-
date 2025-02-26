@@ -1,13 +1,16 @@
-import { io } from "socket.io-client";
+const BASE_URL = process.env.VITE_BASE_URL || "http://localhost:4000";
+const socket = new WebSocket(`${BASE_URL.replace(/^http/, 'ws')}/socket.io/?EIO=4&transport=websocket`);
 
-const SOCKET_URL = "https://keshav-riding-creating-application.onrender.com"; 
+socket.onopen = function(event) {
+  console.log("WebSocket is open now.");
+};
 
-const socket = io(SOCKET_URL, {
-  transports: ["websocket", "polling"], // Enables fallback to polling if WebSockets fail
-  reconnection: true,                   // Enable automatic reconnection
-  reconnectionAttempts: 5,               // Try reconnecting 5 times
-  reconnectionDelay: 5000,               // Wait 5 seconds between reconnect attempts
-  withCredentials: true,                 // Helps with CORS issues if needed
-});
+socket.onclose = function(event) {
+  console.log("WebSocket is closed now.");
+};
+
+socket.onerror = function(error) {
+  console.error("WebSocket error observed:", error);
+};
 
 export default socket;
