@@ -3,18 +3,20 @@ import { io } from "socket.io-client";
 
 export const SocketContext = createContext();
 
-const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:4000";
-console.log("Connecting to:", BASE_URL); // Debugging
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:4000"; // Ensure fallback
+console.log("Connecting to WebSocket at:", BASE_URL); // Debugging
 
 const socket = io(BASE_URL, {
   transports: ["websocket", "polling"], // Ensure fallback support
+  reconnectionAttempts: 5, // Retry connection
+  reconnectionDelay: 2000, // Wait before retrying
 });
 
 const SocketProvider = ({ children }) => {
   useEffect(() => {
-    const handleConnect = () => console.log("Connected to server");
-    const handleDisconnect = () => console.log("Disconnected from server");
-    const handleError = (err) => console.error("Socket error:", err);
+    const handleConnect = () => console.log("✅ Connected to WebSocket Server");
+    const handleDisconnect = () => console.log("⚠️ Disconnected from WebSocket");
+    const handleError = (err) => console.error("❌ WebSocket Error:", err);
 
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
@@ -27,11 +29,7 @@ const SocketProvider = ({ children }) => {
     };
   }, []);
 
-  return (
-    <SocketContext.Provider value={{ socket }}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
 };
 
 export default SocketProvider;
