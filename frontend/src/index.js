@@ -1,8 +1,9 @@
+import socket from './socket';
 
+// ...existing code...
 
+socket.onmessage = function(event) {
+  console.log("WebSocket message received:", event.data);
+};
 
-
-
-
-
-// ...existing code...};  console.log("WebSocket message received:", event.data);socket.onmessage = function(event) {// ...existing code...import socket from './socket';
+// ...existing code...
