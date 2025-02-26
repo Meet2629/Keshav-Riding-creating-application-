@@ -1,4 +1,4 @@
-const BASE_URL = process.env.VITE_BASE_URL || "http://localhost:4000";
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:4000";
 const socket = new WebSocket(`${BASE_URL.replace(/^http/, 'ws')}/socket.io/?EIO=4&transport=websocket`);
 
 socket.onopen = function(event) {
