@@ -17,7 +17,7 @@ const app = express();
 // CORS configuration
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://keshav-riding-creating-application-l04h.onrender.com'
+    process.env.FRONTEND_URL
 ];
 
 const corsOptions = {
