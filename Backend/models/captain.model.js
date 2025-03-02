@@ -60,11 +60,11 @@ const captainSchema = new mongoose.Schema({
   location: {
     lat: {
       type: Number,
-      required: true, // 🔹 Ensure location data is always available
+      required: [true, 'Path `location.lat` is required.'],
     },
     lng: {
       type: Number,
-      required: true,
+      required: [true, 'Path `location.lng` is required.'],
     },
   },
 });
