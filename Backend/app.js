@@ -17,18 +17,21 @@ const app = express();
 // CORS configuration
 const allowedOrigins = [
     'http://localhost:5173',
-    process.env.FRONTEND_URL
+    process.env.FRONTEND_URL || "https://keshav-riding-creating-application-l04h.onrender.com"
 ];
 
 const corsOptions = {
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log(`❌ Blocked by CORS: ${origin}`); // Debugging
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,
+    credentials: true, // Allow cookies and auth headers
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
     optionsSuccessStatus: 200
 };
 
@@ -51,7 +54,7 @@ app.use('/auth', authRoutes);
 
 // Global Error Handling
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error(`🚨 Error: ${err.message}`);
     res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
